@@ -1,24 +1,50 @@
-// Delivery Tracker — Exercício do Cap. 4.
-// Este é o ponto de entrada. Ele deve APENAS configurar o app e montar as rotas.
-// A regra de negócio fica no Service; o acesso a dados no Repository; a
-// composição das dependências (injeção) fica no seu arquivo de rotas.
-//
-// Comece implementando as camadas em src/ (veja o README) e vá rodando o
-// autograder: `npm run check` (com o servidor no ar) ou pela aba Actions no push.
 import express from 'express';
-// import { criarRotas } from './src/routes/index.js';  // <- descomente quando criar as rotas
+import { fileURLToPath } from 'url';
+import criarRoteadorApi from './src/routes/index.js';
+import { AppError } from './src/utils/errors.js';
 
-const app = express();
-app.use(express.json());
+function createApp() {
+  const app = express();
 
-// Health check exigido pelo contrato de execução (não remova).
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+  app.use(express.json());
 
-// TODO: monte aqui o roteador da sua API (composition root em src/routes):
-// app.use('/api', criarRotas());
+  app.use('/api', criarRoteadorApi());
 
-// 404 para rotas não mapeadas (mantenha por último, antes do listen).
-app.use((req, res) => res.status(404).json({ erro: 'recurso não encontrado' }));
+  // 404 para qualquer rota fora de /api
+  app.use((req, res) => {
+    res.status(404).json({ erro: 'Rota não encontrada.' });
+  });
 
+  // Middleware central de erros: converte AppError em { erro, status } previsível
+  // eslint-disable-next-line no-unused-vars
+  app.use((err, req, res, next) => {
+    if (err instanceof AppError) {
+      return res.status(err.statusCode).json({ erro: err.message });
+    }
+
+    if (err.type === 'entity.parse.failed') {
+      // JSON malformado no corpo da requisição
+      return res.status(400).json({ erro: 'Corpo da requisição inválido (JSON malformado).' });
+    }
+
+    console.error(err);
+    return res.status(500).json({ erro: 'Erro interno do servidor.' });
+  });
+
+  return app;
+}
+
+const app = createApp();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Delivery Tracker rodando em http://localhost:${PORT}`));
+
+// Equivalente ESM de `require.main === module`: só sobe o servidor
+// quando o arquivo é executado diretamente (node server.js),
+// não quando é importado (ex.: em testes).
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMainModule) {
+  app.listen(PORT, () => {
+    console.log(`Delivery Tracker API rodando em http://localhost:${PORT}`);
+  });
+}
+
+export default app;
