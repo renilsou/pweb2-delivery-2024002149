@@ -1,9 +1,3 @@
-/**
- * Traduz requisição/resposta HTTP <-> EntregasService.
- * Não contém regra de negócio — apenas parsing de entrada e status codes de saída.
- * Erros de negócio (AppError e subclasses) são repassados ao middleware
- * central de erros via `next(err)`.
- */
 class EntregasController {
   /** @param {import('../services/EntregasService')} service */
   constructor(service) {
