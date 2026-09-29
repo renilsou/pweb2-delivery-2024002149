@@ -1,20 +1,14 @@
-import express from 'express';
-import EntregasRepository from '../repositories/EntregasRepository.js';
-import EntregasService from '../services/EntregasService.js';
-import EntregasController from '../controllers/EntregasController.js';
+import { Router } from 'express';
+import { EntregasRepository } from '../repositories/entregas.repository.js';
+import { EntregasService } from '../services/entregas.service.js';
+import { EntregasController } from '../controllers/entregas.controller.js';
 
-/**
- * Composition root das Entregas: aqui — e só aqui — as camadas são
- * instanciadas e conectadas por injeção de dependência.
- * @param {import('../database/Database').default} database instância única, compartilhada entre routers
- * @returns {import('express').Router}
- */
-function criarRotasDeEntregas(database) {
+export function criarRotasEntregas(database) {
   const repository = new EntregasRepository(database);
   const service = new EntregasService(repository);
   const controller = new EntregasController(service);
 
-  const router = express.Router();
+  const router = Router();
 
   router.post('/', controller.criar);
   router.get('/', controller.listar);
@@ -25,5 +19,3 @@ function criarRotasDeEntregas(database) {
 
   return router;
 }
-
-export default criarRotasDeEntregas;

@@ -1,24 +1,15 @@
-import express from 'express';
-import Database from '../database/Database.js';
-import criarRotasDeEntregas from './entregas.routes.js';
+import { Router } from 'express';
+import { Database } from '../database/database.js';
+import { criarRotasEntregas } from './entregas.routes.js';
 
-/**
- * Monta o router principal servido em /api.
- * A Database é instanciada uma única vez aqui e compartilhada entre
- * todos os módulos de rotas (ex.: entregas, e futuramente motoristas).
- * @returns {import('express').Router}
- */
-function criarRoteadorApi() {
-  const database = new Database();
-  const router = express.Router();
+const database = new Database();
 
-  router.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok' });
-  });
+const router = Router();
 
-  router.use('/entregas', criarRotasDeEntregas(database));
+router.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
-  return router;
-}
+router.use('/entregas', criarRotasEntregas(database));
 
-export default criarRoteadorApi;
+export default router;
