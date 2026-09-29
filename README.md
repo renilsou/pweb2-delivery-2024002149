@@ -7,26 +7,24 @@ com persistência simulada em memória. Projeto do semestre da disciplina Progra
 
 ```
 src/
-├── controllers/   # traduz HTTP ↔ service (sem regra de negócio)
-│   └── EntregasController.js
-├── services/       # TODA a regra de negócio
-│   └── EntregasService.js
-├── repositories/   # só acesso a dados (contrato documentado via JSDoc)
-│   └── EntregasRepository.js
-├── database/       # persistência SIMULADA em memória (sem banco real, sem ORM)
-│   └── Database.js
-├── routes/         # composição das dependências (injeção) + monta em /api
-│   ├── index.js
-│   └── entregas.routes.js
+├── controllers/
+│   └── entregas.controller.js   # traduz HTTP ↔ service (sem regra de negócio)
+├── services/
+│   └── entregas.service.js      # TODA a regra de negócio
+├── repositories/
+│   └── entregas.repository.js   # só acesso a dados
+├── database/
+│   └── database.js              # persistência SIMULADA em memória (sem banco real, sem ORM)
+├── routes/
+│   ├── index.js                 # monta /api/health e /api/entregas
+│   └── entregas.routes.js       # composition root: injeção de dependência
 └── utils/
-    ├── errors.js       # AppError e subclasses (ValidationError, NotFoundError, ConflictError, BusinessRuleError)
-    └── statusFlow.js    # enum de status e mapa de transições válidas
-server.js               # configura o app Express e o middleware central de erros
+    └── AppError.js               # erro de aplicação com mensagem + status HTTP
+server.js                         # configura o app Express e o middleware central de erros
 ```
 
 O projeto usa **ES Modules** (`import`/`export`), conforme `"type": "module"` no `package.json` —
-por isso todos os arquivos usam `import`/`export` em vez de `require`/`module.exports`, e os imports
-locais incluem a extensão `.js` (exigida pelo Node em ESM).
+por isso os imports locais incluem a extensão `.js` (exigida pelo Node em ESM).
 
 A injeção de dependência acontece no **composition root** (`src/routes/entregas.routes.js`):
 
@@ -36,9 +34,8 @@ const service = new EntregasService(repository);
 const controller = new EntregasController(service);
 ```
 
-O Service depende apenas do **contrato** do Repository (documentado via JSDoc em
-`EntregasRepository.js`), nunca do `Database` diretamente — preparando o terreno para a
-Atividade 06, quando o repository poderá ser substituído por um Mock nos testes.
+O Service depende apenas dos métodos do Repository, nunca do `Database` diretamente — preparando
+o terreno para a Atividade 06, quando o repository poderá ser substituído por um Mock nos testes.
 
 ## Como rodar
 
