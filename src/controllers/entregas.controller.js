@@ -14,7 +14,8 @@ export class EntregasController {
 
   listar = async (req, res, next) => {
     try {
-      const entregas = await this.service.listar(req.query.status);
+      const { status } = req.query;
+      const entregas = await this.service.listar({ status });
       res.json(entregas);
     } catch (err) {
       next(err);
@@ -52,6 +53,15 @@ export class EntregasController {
     try {
       const historico = await this.service.historico(Number(req.params.id));
       res.json(historico);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  atribuir = async (req, res, next) => {
+    try {
+      const entrega = await this.service.atribuir(Number(req.params.id), Number(req.body.motoristaId));
+      res.json(entrega);
     } catch (err) {
       next(err);
     }
