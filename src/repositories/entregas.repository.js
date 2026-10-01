@@ -1,5 +1,12 @@
 const COLLECTION = 'entregas';
 
+/**
+ * IEntregasRepository
+ * listarTodos(filtros?) -> Entrega[]
+ * buscarPorId(id)       -> Entrega | null
+ * criar(dados)          -> Entrega
+ * atualizar(id, dados)  -> Entrega
+ */
 export class EntregasRepository {
   constructor(database) {
     this.database = database;
@@ -10,28 +17,17 @@ export class EntregasRepository {
     return this.database.insert(COLLECTION, { ...dados, id });
   }
 
-  async listarTodas() {
-    return this.database.findAll(COLLECTION);
-  }
-
-  async listarPorStatus(status) {
-    return this.database.findAll(COLLECTION).filter((entrega) => entrega.status === status);
+  async listarTodos(filtros = {}) {
+    const { status, motoristaId } = filtros;
+    return this.database.findAll(COLLECTION).filter((entrega) => {
+      if (status && entrega.status !== status) return false;
+      if (motoristaId !== undefined && entrega.motoristaId !== motoristaId) return false;
+      return true;
+    });
   }
 
   async buscarPorId(id) {
     return this.database.findById(COLLECTION, id);
-  }
-
-  async buscarAtivaPorChave(descricao, origem, destino) {
-    return this.database.findOne(
-      COLLECTION,
-      (entrega) =>
-        entrega.descricao === descricao &&
-        entrega.origem === origem &&
-        entrega.destino === destino &&
-        entrega.status !== 'ENTREGUE' &&
-        entrega.status !== 'CANCELADA'
-    );
   }
 
   async atualizar(id, dados) {
