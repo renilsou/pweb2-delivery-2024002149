@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Database } from '../database/database.js';
+import { Database } from '../database/Database.js';
 import { EntregasRepository } from '../repositories/entregas.repository.js';
 import { MotoristasRepository } from '../repositories/motoristas.repository.js';
 import { EntregasService } from '../services/entregas.service.js';
