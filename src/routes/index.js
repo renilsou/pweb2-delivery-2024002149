@@ -1,19 +1,17 @@
 import { Router } from 'express';
-import { Database } from '../database/Database.js';
-import { EntregasRepository } from '../repositories/entregas.repository.js';
-import { MotoristasRepository } from '../repositories/motoristas.repository.js';
 import { EntregasService } from '../services/entregas.service.js';
 import { MotoristasService } from '../services/motoristas.service.js';
+import { EntregasRepositoryPrisma } from '../repositories/entregas.repository.prisma.js';
+import { MotoristasRepositoryPrisma } from '../repositories/motoristas.repository.prisma.js';
 import { EntregasController } from '../controllers/entregas.controller.js';
 import { MotoristasController } from '../controllers/motoristas.controller.js';
 import { criarRotasEntregas } from './entregas.routes.js';
 import { criarRotasMotoristas } from './motoristas.routes.js';
 
 // composition root: único lugar do projeto onde as camadas são instanciadas e ligadas
-const database = new Database();
 
-const entregasRepo = new EntregasRepository(database);
-const motoristasRepo = new MotoristasRepository(database);
+const entregasRepo = new EntregasRepositoryPrisma(database);
+const motoristasRepo = new MotoristasRepositoryPrisma(database);
 
 const entregasService = new EntregasService(entregasRepo, motoristasRepo);
 const motoristasService = new MotoristasService(motoristasRepo, entregasRepo);
