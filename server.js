@@ -1,35 +1,41 @@
+import path from 'node:path';
 import express from 'express';
-import { fileURLToPath } from 'url';
-import apiRouter from './src/routes/index.js';
-import { AppError } from './src/utils/AppError.js';
+import expressLayouts from 'express-ejs-layouts';
+import session from 'express-session';
+import flash from 'connect-flash';
+import methodOverride from 'method-override';
+import routes from './src/routes/index.js';
+import { naoEncontrado, tratarErros } from './src/middlewares/erros.js';
 
 const app = express();
 
-app.use(express.json());
-app.use('/api', apiRouter);
+app.set('view engine', 'ejs');
+app.set('views', path.join(import.meta.dirname, 'src', 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layouts/base');
 
-app.use((req, res) => {
-  res.status(404).json({ erro: 'Rota não encontrada.' });
+app.use(express.static(path.join(import.meta.dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride('_method'));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'delivery-tracker-dev',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.sucesso = req.flash('sucesso');
+  res.locals.erro = req.flash('erro');
+  next();
 });
 
-app.use((err, req, res, next) => {
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({ erro: err.message });
-  }
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ erro: 'Corpo da requisição inválido (JSON malformado).' });
-  }
-  console.error(err);
-  return res.status(500).json({ erro: 'Erro interno do servidor.' });
-});
+app.use(routes);
+app.use(naoEncontrado);
+app.use(tratarErros);
 
 const PORT = process.env.PORT || 3000;
-const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
-
-if (isMainModule) {
-  app.listen(PORT, () => {
-    console.log(`Delivery Tracker API rodando em http://localhost:${PORT}`);
-  });
-}
-
-export default app;
+app.listen(PORT, () => {
+  console.log(`Delivery Tracker rodando em http://localhost:${PORT}`);
+});
