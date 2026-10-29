@@ -1,41 +1,39 @@
+import { validationResult } from 'express-validator';
+import { AppError } from '../utils/AppError.js';
+
 export class MotoristasController {
   constructor(service) {
     this.service = service;
   }
 
-  criar = async (req, res, next) => {
-    try {
-      const motorista = await this.service.criar(req.body);
-      res.status(201).json(motorista);
-    } catch (err) {
-      next(err);
-    }
-  };
-
   listar = async (req, res, next) => {
     try {
       const motoristas = await this.service.listar();
-      res.json(motoristas);
+      res.render('motoristas/index', { motoristas });
     } catch (err) {
       next(err);
     }
   };
 
-  buscarPorId = async (req, res, next) => {
-    try {
-      const motorista = await this.service.buscarPorId(Number(req.params.id));
-      res.json(motorista);
-    } catch (err) {
-      next(err);
-    }
+  formNovo = (req, res) => {
+    res.render('motoristas/novo', { erros: [], dados: {} });
   };
 
-  listarEntregas = async (req, res, next) => {
+  criar = async (req, res, next) => {
+    const resultado = validationResult(req);
+    if (!resultado.isEmpty()) {
+      const erros = resultado.array().map((e) => e.msg);
+      return res.status(400).render('motoristas/novo', { erros, dados: req.body });
+    }
+
     try {
-      const { status } = req.query;
-      const entregas = await this.service.listarEntregas(Number(req.params.id), status);
-      res.json(entregas);
+      await this.service.criar(req.body);
+      req.flash('sucesso', 'Motorista cadastrado com sucesso!');
+      res.redirect('/motoristas');
     } catch (err) {
+      if (err instanceof AppError && err.statusCode < 500) {
+        return res.status(err.statusCode).render('motoristas/novo', { erros: [err.message], dados: req.body });
+      }
       next(err);
     }
   };
