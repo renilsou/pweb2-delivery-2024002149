@@ -1,0 +1,17 @@
+<h1>Nova Entrega</h1>
+
+<%- include('../partials/erros') %>
+
+<form method="POST" action="/entregas">
+  <label for="descricao">Descrição</label>
+  <input type="text" id="descricao" name="descricao" value="<%= dados.descricao || '' %>">
+
+  <label for="origem">Origem</label>
+  <input type="text" id="origem" name="origem" value="<%= dados.origem || '' %>">
+
+  <label for="destino">Destino</label>
+  <input type="text" id="destino" name="destino" value="<%= dados.destino || '' %>">
+
+  <button type="submit">Salvar</button>
+  <a href="/entregas">Cancelar</a>
+</form>

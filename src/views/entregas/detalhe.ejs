@@ -1,0 +1,51 @@
+<h1>Entrega #<%= entrega.id %></h1>
+
+<p><strong>Descrição:</strong> <%= entrega.descricao %></p>
+<p><strong>Origem:</strong> <%= entrega.origem %></p>
+<p><strong>Destino:</strong> <%= entrega.destino %></p>
+<p><strong>Status:</strong> <span class="badge <%= entrega.status %>"><%= entrega.status %></span></p>
+<p><strong>Motorista:</strong> <%= motorista ? motorista.nome : 'Não atribuído' %></p>
+
+<% if (ativa) { %>
+  <div class="acoes">
+    <form method="POST" action="/entregas/<%= entrega.id %>/avancar?_method=PATCH">
+      <button type="submit">Avançar status</button>
+    </form>
+    <form method="POST" action="/entregas/<%= entrega.id %>/cancelar?_method=PATCH">
+      <button type="submit" class="perigo">Cancelar entrega</button>
+    </form>
+  </div>
+<% } %>
+
+<% if (entrega.status === 'CRIADA') { %>
+  <form class="filtro" method="POST" action="/entregas/<%= entrega.id %>/atribuir?_method=PATCH">
+    <label for="motoristaId">Motorista:</label>
+    <select id="motoristaId" name="motoristaId">
+      <option value="">Selecione...</option>
+      <% motoristas.forEach((m) => { %>
+        <option value="<%= m.id %>"><%= m.nome %></option>
+      <% }) %>
+    </select>
+    <button type="submit">Atribuir</button>
+  </form>
+<% } %>
+
+<h2>Histórico</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Evento</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% entrega.historico.forEach((evento) => { %>
+      <tr>
+        <td><%= new Date(evento.data).toLocaleString('pt-BR', { timeZone: 'America/Maceio' }) %></td>
+        <td><%= evento.descricao %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<p><a href="/entregas">&larr; Voltar para as entregas</a></p>

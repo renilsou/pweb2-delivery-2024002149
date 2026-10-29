@@ -1,0 +1,14 @@
+<h1>Novo Motorista</h1>
+
+<%- include('../partials/erros') %>
+
+<form method="POST" action="/motoristas">
+  <label for="nome">Nome</label>
+  <input type="text" id="nome" name="nome" value="<%= dados.nome || '' %>">
+
+  <label for="cpf">CPF</label>
+  <input type="text" id="cpf" name="cpf" value="<%= dados.cpf || '' %>">
+
+  <button type="submit">Salvar</button>
+  <a href="/motoristas">Cancelar</a>
+</form>

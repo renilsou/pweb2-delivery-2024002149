@@ -1,0 +1,6 @@
+<% (locals.sucesso || []).forEach((mensagem) => { %>
+  <div class="alerta sucesso"><%= mensagem %></div>
+<% }) %>
+<% (locals.erro || []).forEach((mensagem) => { %>
+  <div class="alerta erro"><%= mensagem %></div>
+<% }) %>

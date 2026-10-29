@@ -1,0 +1,29 @@
+<h1>Motoristas</h1>
+
+<p>
+  <a class="botao" href="/motoristas/novo">Novo Motorista</a>
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nome</th>
+      <th>CPF</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (motoristas.length === 0) { %>
+      <tr><td colspan="4">Nenhum motorista cadastrado.</td></tr>
+    <% } %>
+    <% motoristas.forEach((motorista) => { %>
+      <tr>
+        <td><%= motorista.id %></td>
+        <td><%= motorista.nome %></td>
+        <td><%= motorista.cpf %></td>
+        <td><span class="badge <%= motorista.status %>"><%= motorista.status %></span></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
