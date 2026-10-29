@@ -10,8 +10,8 @@ import { criarRotasMotoristas } from './motoristas.routes.js';
 
 // composition root: único lugar do projeto onde as camadas são instanciadas e ligadas
 
-const entregasRepo = new EntregasRepositoryPrisma(database);
-const motoristasRepo = new MotoristasRepositoryPrisma(database);
+const entregasRepo = new EntregasRepositoryPrisma();
+const motoristasRepo = new MotoristasRepositoryPrisma();
 
 const entregasService = new EntregasService(entregasRepo, motoristasRepo);
 const motoristasService = new MotoristasService(motoristasRepo, entregasRepo);
