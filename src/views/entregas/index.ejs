@@ -4,17 +4,6 @@
   <a class="botao" href="/entregas/nova">Nova Entrega</a>
 </p>
 
-<form class="filtro" method="GET" action="/entregas">
-  <label for="status">Filtrar por status:</label>
-  <select id="status" name="status">
-    <option value="">Todos</option>
-    <% statusLista.forEach((s) => { %>
-      <option value="<%= s %>" <%= s === status ? 'selected' : '' %>><%= s %></option>
-    <% }) %>
-  </select>
-  <button type="submit">Filtrar</button>
-</form>
-
 <table>
   <thead>
     <tr>
