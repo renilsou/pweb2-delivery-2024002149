@@ -1,12 +1,12 @@
 import { Router } from 'express';
+import { validarMotorista } from '../middlewares/validators.js';
 
 export function criarRotasMotoristas(controller) {
   const router = Router();
 
-  router.post('/', controller.criar);
   router.get('/', controller.listar);
-  router.get('/:id/entregas', controller.listarEntregas);
-  router.get('/:id', controller.buscarPorId);
+  router.get('/novo', controller.formNovo);
+  router.post('/', validarMotorista, controller.criar);
 
   return router;
 }

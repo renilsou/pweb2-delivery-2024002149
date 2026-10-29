@@ -1,15 +1,16 @@
 import { Router } from 'express';
+import { validarEntrega, validarAtribuicao } from '../middlewares/validators.js';
 
 export function criarRotasEntregas(controller) {
   const router = Router();
 
-  router.post('/', controller.criar);
   router.get('/', controller.listar);
-  router.get('/:id/historico', controller.historico);
-  router.get('/:id', controller.buscarPorId);
+  router.get('/nova', controller.formNova);
+  router.post('/', validarEntrega, controller.criar);
+  router.get('/:id', controller.detalhe);
   router.patch('/:id/avancar', controller.avancar);
   router.patch('/:id/cancelar', controller.cancelar);
-  router.patch('/:id/atribuir', controller.atribuir);
+  router.patch('/:id/atribuir', validarAtribuicao, controller.atribuir);
 
   return router;
 }
